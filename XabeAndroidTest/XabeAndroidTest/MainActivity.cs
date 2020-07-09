@@ -8,6 +8,7 @@ using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Xabe.FFmpeg;
+using Xabe.FFmpeg.Downloader;
 
 namespace XabeAndroidTest
 {
@@ -92,7 +93,7 @@ namespace XabeAndroidTest
 
             if (File.Exists(videoFileFullName))
             {
-                IMediaInfo videoMediaInfo = await MediaInfo.Get(videoFileFullName);
+                IMediaInfo videoMediaInfo = await FFmpeg.GetMediaInfo(videoFileFullName);
             }
             else
             {

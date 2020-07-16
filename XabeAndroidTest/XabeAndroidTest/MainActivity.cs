@@ -8,7 +8,7 @@ using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Xabe.FFmpeg;
-using Xabe.FFmpeg.Downloader;
+using Xabe.FFmpeg.Downloader.Android;
 
 namespace XabeAndroidTest
 {
@@ -86,7 +86,10 @@ namespace XabeAndroidTest
             string videoFileFullName = Path.Combine(mediaDirectory, videoFileName);
 
             FFmpeg.SetExecutablesPath(ffmpegDirectory);
-            await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, FFmpeg.ExecutablesPath);
+            EABIProvider eABIProvider = new EABIProvider();
+            AndroidFFmpegDownloader downloader = new AndroidFFmpegDownloader(eABIProvider);
+
+            await downloader.GetLatestVersion(FFmpeg.ExecutablesPath);
 
             CheckAndSetExecutable(FFmpeg.ExecutablesPath, "ffmpeg");
             CheckAndSetExecutable(FFmpeg.ExecutablesPath, "ffprobe");

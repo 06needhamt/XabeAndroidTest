@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
+using Android.Util;
 using Android.Views;
+using Android.Widget;
 using Xabe.FFmpeg;
 using Xabe.FFmpeg.Downloader.Android;
 
@@ -73,17 +76,17 @@ namespace XabeAndroidTest
         private async Task<bool> DoTest()
         {
             RequestPermission();
-
-            string ffmpegDirectory = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "FFmpeg");
+            string ffmpegDirectory = Path.Combine(Application.Context.FilesDir.AbsolutePath, "FFmpeg");
 
             Directory.CreateDirectory(ffmpegDirectory);
 
-            string mediaDirectory = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, "FFMpegTest");
+            string mediaDirectory = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, "FFmpegTest");
 
             Directory.CreateDirectory(mediaDirectory);
 
             string videoFileName = "test.mp4";
             string videoFileFullName = Path.Combine(mediaDirectory, videoFileName);
+            string outputFileFullName = Path.Combine(mediaDirectory, "output.mp4");
 
             FFmpeg.SetExecutablesPath(ffmpegDirectory);
             EABIProvider eABIProvider = new EABIProvider();
@@ -96,11 +99,23 @@ namespace XabeAndroidTest
 
             if (File.Exists(videoFileFullName))
             {
-                IMediaInfo videoMediaInfo = await FFmpeg.GetMediaInfo(videoFileFullName);
+                IMediaInfo inputMediaInfo = await FFmpeg.GetMediaInfo(videoFileFullName);
+
+                Log.Info("DoTest", $"Input File has {inputMediaInfo.VideoStreams.Count()} Video Streams");
+                
+                Toast.MakeText(Application.Context, $"Input File has {inputMediaInfo.VideoStreams.Count()} Video Streams", ToastLength.Long).Show();
+
+                IConversionResult result = await (await FFmpeg.Conversions.FromSnippet.Convert(videoFileFullName, outputFileFullName)).Start();
+
+                IMediaInfo outputMediaInfo = await FFmpeg.GetMediaInfo(outputFileFullName);
+
+                Log.Info("DoTest", $"Output File has {outputMediaInfo.VideoStreams.Count()} Video Streams");
+
+                Toast.MakeText(Application.Context, $"Output File has {outputMediaInfo.VideoStreams.Count()} Video Streams", ToastLength.Long).Show();
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("File doesn't exists.");
+                Log.Info("DoTest", "File doesn't exists.");
             }
 
 
@@ -115,16 +130,16 @@ namespace XabeAndroidTest
             {
                 if (myFile.SetExecutable(true, false))
                 {
-                    System.Diagnostics.Debug.WriteLine("File is executable");
+                    Log.Info("CheckAndSetExecutable", "File is executable");
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("Failed to make the file executable");
+                    Log.Info("CheckAndSetExecutable", "Failed to make the file executable");
                 }
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("File is executable");
+                Log.Info("CheckAndSetExecutable", "File is executable");
             }
         }
     }

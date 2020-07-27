@@ -103,15 +103,20 @@ namespace XabeAndroidTest
 
                 Log.Info("DoTest", $"Input File has {inputMediaInfo.VideoStreams.Count()} Video Streams");
                 
-                Toast.MakeText(Application.Context, $"Input File has {inputMediaInfo.VideoStreams.Count()} Video Streams", ToastLength.Long).Show();
+                Toast.MakeText(this, $"Input File has {inputMediaInfo.VideoStreams.Count()} Video Streams", ToastLength.Long).Show();
 
-                IConversionResult result = await (await FFmpeg.Conversions.FromSnippet.Convert(videoFileFullName, outputFileFullName)).Start();
+                IConversionResult result = await Conversion.New()
+                    .AddStream(inputMediaInfo.VideoStreams)
+                    .AddStream(inputMediaInfo.AudioStreams)
+                    .SetOverwriteOutput(true)
+                    .SetOutput(outputFileFullName)
+                    .Start();
 
                 IMediaInfo outputMediaInfo = await FFmpeg.GetMediaInfo(outputFileFullName);
 
                 Log.Info("DoTest", $"Output File has {outputMediaInfo.VideoStreams.Count()} Video Streams");
 
-                Toast.MakeText(Application.Context, $"Output File has {outputMediaInfo.VideoStreams.Count()} Video Streams", ToastLength.Long).Show();
+                Toast.MakeText(this, $"Output File has {outputMediaInfo.VideoStreams.Count()} Video Streams", ToastLength.Long).Show();
             }
             else
             {

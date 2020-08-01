@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Android.App;
 using Android.OS;
@@ -11,7 +12,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Xabe.FFmpeg;
-using Xabe.FFmpeg.Downloader.Android;
+using Xabe.FFmpeg.Downloader;
 
 namespace XabeAndroidTest
 {
@@ -76,6 +77,9 @@ namespace XabeAndroidTest
         private async Task<bool> DoTest()
         {
             RequestPermission();
+
+            Toast.MakeText(this, RuntimeInformation.ProcessArchitecture.ToString(), ToastLength.Long).Show();
+
             string ffmpegDirectory = Path.Combine(Application.Context.FilesDir.AbsolutePath, "FFmpeg");
 
             Directory.CreateDirectory(ffmpegDirectory);
@@ -89,10 +93,8 @@ namespace XabeAndroidTest
             string outputFileFullName = Path.Combine(mediaDirectory, "output.mp4");
 
             FFmpeg.SetExecutablesPath(ffmpegDirectory);
-            EABIProvider eABIProvider = new EABIProvider();
-            AndroidFFmpegDownloader downloader = new AndroidFFmpegDownloader(eABIProvider);
 
-            await downloader.GetLatestVersion(FFmpeg.ExecutablesPath);
+            await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Android, FFmpeg.ExecutablesPath);
 
             CheckAndSetExecutable(FFmpeg.ExecutablesPath, "ffmpeg");
             CheckAndSetExecutable(FFmpeg.ExecutablesPath, "ffprobe");

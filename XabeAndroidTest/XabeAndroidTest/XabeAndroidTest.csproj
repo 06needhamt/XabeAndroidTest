@@ -67,8 +67,8 @@
     <Reference Include="Xabe.FFmpeg">
       <HintPath>DLLS\Xabe.FFmpeg.dll</HintPath>
     </Reference>
-    <Reference Include="Xabe.FFmpeg.Downloader.Android">
-      <HintPath>DLLS\Xabe.FFmpeg.Downloader.Android.dll</HintPath>
+    <Reference Include="Xabe.FFmpeg.Downloader">
+      <HintPath>DLLS\Xabe.FFmpeg.Downloader.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
